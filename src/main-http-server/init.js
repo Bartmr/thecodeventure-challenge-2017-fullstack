@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const hapi = require('hapi');
+const bell = require('bell');
 const inert = require('inert');
 
 // Load the hosting parameters from the config file.
@@ -27,11 +28,20 @@ server.connection({host: config.mainHttpServer.host, port: config.mainHttpServer
 server.register([
   {
     register: inert
+  }, {
+    register: bell
   }
 ], function pluginsRegisterCallback(err) {
   if (err) {
     console.log(err);
   } else {
+
+    server.auth.strategy('github', 'bell', {
+      provider: 'github',
+      password: config.githubOAuth.password,
+      clientId: config.githubOAuth.clientId,
+      clientSecret: config.githubOAuth.clientSecret
+    });
 
     // Set up the routes, that in turn set the handlers
     server.route(routes);

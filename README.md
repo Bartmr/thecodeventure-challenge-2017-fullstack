@@ -2,8 +2,9 @@
 * Set environment variables if you just want to run the server without starting any client-side views build or dev systems:
     * `NODE_ENV` - Set to `development` or `production` according to the context.
 
-* Duplicate the `config.template` folder and rename it `config`.
-Change the settings inside accordingly.
+* Duplicate the `config.template` folder, rename it `config` and
+
+* Change the `config.js` inside the newly duplicated `config` folder and also put your Github OAuth API keys.
 
 * Install dependencies:
 ```
@@ -12,6 +13,7 @@ Change the settings inside accordingly.
 
 * Generate your certificates for HTTPS or HTTP/2:
 ```
+    Using Unix or Git Bash on Windows:
     $ mkdir certificates    //starting from the project's root folder
     $ cd certificates
 
