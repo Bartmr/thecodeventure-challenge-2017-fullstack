@@ -1,6 +1,9 @@
 const https = require('https');
 
+const itemsTreeCache = {};
+
 module.exports = [
+
   {
     method: 'GET',
     path: '/{path*}',
@@ -15,8 +18,8 @@ module.exports = [
     }
   }, {
     method: 'GET',
-    path: '/hacker-news-top-stories',
-    handler: function hackerNewsTopStoriesHandler(request, reply) {
+    path: '/top-stories',
+    handler: function topStoriesHandler(request, reply) {
 
       // https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty
 
@@ -26,16 +29,16 @@ module.exports = [
         method: 'GET'
       }, function(hackerNewsRes) {
 
-        var payloadToSend = '';
+        var newlyFetchedRootItemsIds = '';
 
         hackerNewsRes.setEncoding('utf8');
 
         hackerNewsRes.on('data', function(data) {
-          payloadToSend += data;
+          newlyFetchedRootItemsIds += data;
         });
 
         hackerNewsRes.on('end', function(data) {
-          reply(payloadToSend);
+          diffPopulateWithContentRepeat(itemsTreeCache, newlyFetchedRootItemsIds);
         });
 
       }).on('error', (e) => {
@@ -43,9 +46,22 @@ module.exports = [
       }).end();
 
     }
-
     // config: {
     //   auth: 'session'
     // }
   }
+
 ]
+
+function diffPopulateWithContentRepeat(itemsTreeNode, newlyFetchedItemsIds) {
+  // Check what items were deleted since last fetch
+  // Due to async stuff, variables will be generated inside for loops
+  for (item of itemsTreeNode) {
+    var itemsIdsToDelete = [];
+    if (newlyFetchedItemsIds.indexOf(item.id) < 0) {
+      itemsToDelete.push(item.id);
+    }
+  }
+  // Delete the differencial
+  for (itemId of itemsIdsToDelete) {}
+}
