@@ -1,7 +1,5 @@
 const https = require('https');
 
-const itemsTreeCache = {};
-
 module.exports = [
 
   {
@@ -23,7 +21,7 @@ module.exports = [
 
       // https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty
 
-      var hackerNewsReq = https.get({
+      https.get({
         host: 'hacker-news.firebaseio.com',
         path: '/v0/topstories.json?print=pretty',
         method: 'GET'
@@ -38,11 +36,11 @@ module.exports = [
         });
 
         hackerNewsRes.on('end', function(data) {
-          diffPopulateWithContentRepeat(itemsTreeCache, newlyFetchedRootItemsIds);
+          newlyFetchedRootItemsIds = JSON.parse(newlyFetchedRootItemsIds);
         });
 
       }).on('error', (e) => {
-        reply('Error getting HackerNews post ID arrays: ' + JSON.stringify(e)).code(500);
+        reply('Error getting Hacker News root items ids: ' + JSON.stringify(e)).code(500);
       }).end();
 
     }
@@ -52,16 +50,3 @@ module.exports = [
   }
 
 ]
-
-function diffPopulateWithContentRepeat(itemsTreeNode, newlyFetchedItemsIds) {
-  // Check what items were deleted since last fetch
-  // Due to async stuff, variables will be generated inside for loops
-  for (item of itemsTreeNode) {
-    var itemsIdsToDelete = [];
-    if (newlyFetchedItemsIds.indexOf(item.id) < 0) {
-      itemsToDelete.push(item.id);
-    }
-  }
-  // Delete the differencial
-  for (itemId of itemsIdsToDelete) {}
-}

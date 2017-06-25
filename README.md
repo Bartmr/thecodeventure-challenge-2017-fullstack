@@ -28,3 +28,6 @@
 ```
     $ npm start
 ```
+
+## TODO:
+* Tests using a parallel mock server that delivers different JSONs emulating a news feed constantly updating.
