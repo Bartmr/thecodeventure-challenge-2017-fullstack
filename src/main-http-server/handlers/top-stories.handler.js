@@ -4,9 +4,11 @@ const areArraysEqual = require('../utils/are-arrays-equal.js');
 var topStoriesIds = [];
 var topStoriesContents = [];
 
-// Stop signs to make the requests wait for info to be fetched only one time.
-var isFetchingTopStoryIds = false;
-var isPopulatingTopStories = false;
+// Stop signalss to make the requests wait for info to be fetched only one time.
+const stopSignals = {
+  isFetchingTopStoryIds: false,
+  isPopulatingTopStories: false
+}
 
 var errorInStoryContentPopulation = false;
 
@@ -14,12 +16,12 @@ var replyCallbacksQueue = [];
 
 module.exports = {
   replyTopStories: function getTopStoriesContents(request, replyCallback) {
-    if (isFetchingTopStoryIds || isPopulatingTopStories) {
+    if (stopSignals.isFetchingTopStoryIds || stopSignals.isPopulatingTopStories) {
       replyCallbacksQueue.push(replyCallback);
     } else {
       // Time to pause all requests till the Ids are refreshed
       replyCallbacksQueue.push(replyCallback);
-      isFetchingTopStoryIds = true;
+      stopSignals.isFetchingTopStoryIds = true;
 
       https.get({
         host: 'hacker-news.firebaseio.com',
@@ -41,8 +43,8 @@ module.exports = {
             runReplyCallbacksQueue('isFetchingTopStoryIds', topStoriesContents);
           } else {
             // Top stories are not refreshed, is time to pause the requests
-            isPopulatingTopStories = true;
-            isFetchingTopStoryIds = false;
+            stopSignals.isPopulatingTopStories = true;
+            stopSignals.isFetchingTopStoryIds = false;
 
             for (var i = 0; i < newlyFetchedTopStoriesIds.length; i++) {
               fetchStoryContentAndPopulateCache(i, newlyFetchedTopStoriesIds);
@@ -70,11 +72,7 @@ function runReplyCallbacksQueue(task, payload, errorCode) {
       reply(payload).code(errorCode);
     }
   }
-  if (task == 'isFetchingTopStoryIds') {
-    isFetchingTopStoryIds = false;
-  } else {
-    isPopulatingTopStories = false;
-  }
+  stopSignals[task] = false;
 }
 
 function fetchStoryContentAndPopulateCache(i, newlyFetchedTopStoriesIds) {
