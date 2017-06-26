@@ -34,7 +34,7 @@ module.exports = {
           newlyFetchedTopStoriesIds = JSON.parse(newlyFetchedTopStoriesIds);
 
           if (areArraysEqual(topStoriesIds, newlyFetchedTopStoriesIds)) {
-            runReplyCallbacksQueue(topStoriesContents);
+            runReplyCallbacksQueue(isFetchingTopStoryIds, topStoriesContents);
           } else {
             // Top stories are not refreshed, is time to pause the requests
 
@@ -43,7 +43,7 @@ module.exports = {
         });
       }).on('error', (e) => {
 
-        runReplyCallbacksQueue('Error', 500);
+        runReplyCallbacksQueue(isFetchingTopStoryIds, 'Error', 500);
 
       }).end();
 
@@ -51,7 +51,7 @@ module.exports = {
   }
 }
 
-function runReplyCallbacksQueue(payload, errorCode) {
+function runReplyCallbacksQueue(task, payload, errorCode) {
   var iterator = replyCallbacksQueue.entries();
 
   for (let n of iterator) {
@@ -65,5 +65,5 @@ function runReplyCallbacksQueue(payload, errorCode) {
 
   // TODO: think of a way to delete replyCallbacks while iterating them
   replyCallbacksQueue = [];
-  isFetchingTopStoryIds = false;
+  task = false;
 }
