@@ -16,6 +16,8 @@ module.exports = {
   get: function getTopStoriesContents(replyCallback) {
     if (isFetchingTopStoryIds || isPopulatingTopStories) {
       replyCallbacksQueue.push(replyCallback);
+      console.log(isFetchingTopStoryIds);
+      console.log(isPopulatingTopStories);
     } else {
       // Time to pause all requests till the Ids are refreshed
       replyCallbacksQueue.push(replyCallback);
@@ -38,7 +40,7 @@ module.exports = {
           newlyFetchedTopStoriesIds = JSON.parse(newlyFetchedTopStoriesIds);
 
           if (areArraysEqual(topStoriesIds, newlyFetchedTopStoriesIds)) {
-            runReplyCallbacksQueue(isFetchingTopStoryIds, topStoriesContents);
+            runReplyCallbacksQueue('isFetchingTopStoryIds', topStoriesContents);
           } else {
             // Top stories are not refreshed, is time to pause the requests
             isPopulatingTopStories = true;
@@ -52,7 +54,7 @@ module.exports = {
         });
       }).on('error', (e) => {
 
-        runReplyCallbacksQueue(isFetchingTopStoryIds, 'Error', 500);
+        runReplyCallbacksQueue('isFetchingTopStoryIds', 'Error', 500);
 
       }).end();
 
@@ -61,7 +63,6 @@ module.exports = {
 }
 
 function runReplyCallbacksQueue(task, payload, errorCode) {
-  console.log('emptying queue');
 
   while (replyCallbacksQueue.length != 0) {
     var reply = replyCallbacksQueue.shift();
@@ -71,8 +72,11 @@ function runReplyCallbacksQueue(task, payload, errorCode) {
       reply(payload).code(errorCode);
     }
   }
-
-  task = false;
+  if (task == 'isFetchingTopStoryIds') {
+    isFetchingTopStoryIds = false;
+  } else {
+    isPopulatingTopStories = false;
+  }
 }
 
 function fetchStoryContentAndPopulateCache(i, newlyFetchedTopStoriesIds) {
@@ -91,8 +95,7 @@ function fetchStoryContentAndPopulateCache(i, newlyFetchedTopStoriesIds) {
         topStoriesContents.push(JSON.parse(storyContentResponseData));
         if (i == newlyFetchedTopStoriesIds.length - 1) {
           topStoriesIds = newlyFetchedTopStoriesIds;
-          console.log('here');
-          runReplyCallbacksQueue(isPopulatingTopStories, topStoriesContents);
+          runReplyCallbacksQueue('isPopulatingTopStories', topStoriesContents);
           errorInStoryContentPopulation = false;
         }
       }
@@ -102,6 +105,6 @@ function fetchStoryContentAndPopulateCache(i, newlyFetchedTopStoriesIds) {
     topStoriesIds = [];
     topStoriesContents = [];
     errorInStoryContentPopulation = true;
-    runReplyCallbacksQueue(isPopulatingTopStories, 'Error', 500);
+    runReplyCallbacksQueue('isPopulatingTopStories', 'Error', 500);
   }).end();
 }
