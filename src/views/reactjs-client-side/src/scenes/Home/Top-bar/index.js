@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
-import './App-bar.css';
+import './Top-bar.css';
 
-class AppBar extends Component {
+class TopBar extends Component {
   render() {
     return (
       <div className="app-bar">
@@ -15,4 +15,4 @@ class AppBar extends Component {
   }
 }
 
-export default AppBar;
+export default TopBar;
