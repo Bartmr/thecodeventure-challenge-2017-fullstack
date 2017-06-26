@@ -4,6 +4,7 @@ const fs = require('fs');
 const hapi = require('hapi');
 const bell = require('bell');
 const inert = require('inert');
+const hapiAuthCookie = require('hapi-auth-cookie');
 
 // Load the hosting parameters from the config file.
 const config = require('../../config/config.js');
@@ -30,11 +31,19 @@ server.register([
     register: inert
   }, {
     register: bell
+  }, {
+    register: hapiAuthCookie
   }
 ], function pluginsRegisterCallback(err) {
   if (err) {
     console.log(err);
   } else {
+
+    server.auth.strategy('session', 'cookie', {
+      cookie: 'sid',
+      password: config.hapiAuthCookie.passwordEncryption,
+      redirectTo: false
+    });
 
     server.auth.strategy('github', 'bell', {
       provider: 'github',

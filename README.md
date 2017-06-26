@@ -26,7 +26,8 @@
 
 * Launch the project:
 ```
-    $ npm start
+    $ npm run dev (launch in development mode)
+    $ npm run prod (launch in production ready mode)
 ```
 
 ## TODO:

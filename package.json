@@ -4,8 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node src/init.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "cross-env NODE_ENV=development HTTPS=true concurrently \"npm run server-only\" \"npm run reactjs-client-side-start\"",
+    "prod": "cross-env NODE_ENV=production concurrently \"npm run server-only\" \"npm run reactjs-client-side-build\"",
+    "server-only": "node src/init.js",
+    "reactjs-client-side-start": "cd src/views/reactjs-client-side && npm start",
+    "reactjs-client-side-build": "cd src/views/reactjs-client-side && npm run build"
   },
   "author": "Bartolomeu Rodrigues",
   "license": "ISC",
@@ -14,5 +17,9 @@
     "hapi": "^16.4.3",
     "hapi-auth-cookie": "^7.0.0",
     "inert": "^4.2.0"
+  },
+  "devDependencies": {
+    "concurrently": "^3.5.0",
+    "cross-env": "^5.0.1"
   }
 }
