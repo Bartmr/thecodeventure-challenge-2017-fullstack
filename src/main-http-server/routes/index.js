@@ -1,4 +1,4 @@
-const topStoriesCache = require('../top-stories-cache.js');
+const topStoriesHandler = require('../handlers/top-stories.handler.js');
 
 module.exports = [
 
@@ -17,9 +17,7 @@ module.exports = [
   }, {
     method: 'GET',
     path: '/top-stories',
-    handler: function topStoriesHandler(request, reply) {
-      topStoriesCache.get(reply);
-    }
+    handler: topStoriesHandler.replyTopStories
     // config: {
     //   auth: 'session'
     // }

@@ -1,5 +1,5 @@
 const https = require('https');
-const areArraysEqual = require('./utils/are-arrays-equal.js');
+const areArraysEqual = require('../utils/are-arrays-equal.js');
 
 var topStoriesIds = [];
 var topStoriesContents = [];
@@ -13,11 +13,9 @@ var errorInStoryContentPopulation = false;
 var replyCallbacksQueue = [];
 
 module.exports = {
-  get: function getTopStoriesContents(replyCallback) {
+  replyTopStories: function getTopStoriesContents(request, replyCallback) {
     if (isFetchingTopStoryIds || isPopulatingTopStories) {
       replyCallbacksQueue.push(replyCallback);
-      console.log(isFetchingTopStoryIds);
-      console.log(isPopulatingTopStories);
     } else {
       // Time to pause all requests till the Ids are refreshed
       replyCallbacksQueue.push(replyCallback);
