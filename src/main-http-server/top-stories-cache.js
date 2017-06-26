@@ -1,3 +1,4 @@
+const https = require('https');
 const areArraysEqual = require('./utils/are-arrays-equal.js');
 
 var topStoriesIds = [];
@@ -7,6 +8,8 @@ var topStoriesContents = [];
 var isFetchingTopStoryIds = false;
 var isPopulatingTopStories = false;
 
+var errorInStoryContentPopulation = false;
+
 var replyCallbacksQueue = [];
 
 module.exports = {
@@ -14,7 +17,8 @@ module.exports = {
     if (isFetchingTopStoryIds || isPopulatingTopStories) {
       replyCallbacksQueue.push(replyCallback);
     } else {
-
+      // Time to pause all requests till the Ids are refreshed
+      replyCallbacksQueue.push(replyCallback);
       isFetchingTopStoryIds = true;
 
       https.get({
@@ -37,7 +41,12 @@ module.exports = {
             runReplyCallbacksQueue(isFetchingTopStoryIds, topStoriesContents);
           } else {
             // Top stories are not refreshed, is time to pause the requests
+            isPopulatingTopStories = true;
+            isFetchingTopStoryIds = false;
 
+            for (var i = 0; i < newlyFetchedTopStoriesIds.length; i++) {
+              fetchStoryContentAndPopulateCache(i, newlyFetchedTopStoriesIds);
+            }
           }
 
         });
@@ -52,18 +61,47 @@ module.exports = {
 }
 
 function runReplyCallbacksQueue(task, payload, errorCode) {
-  var iterator = replyCallbacksQueue.entries();
+  console.log('emptying queue');
 
-  for (let n of iterator) {
+  while (replyCallbacksQueue.length != 0) {
+    var reply = replyCallbacksQueue.shift();
     if (!errorCode) {
-      n(payload);
+      reply(payload);
     } else {
-      n(payload).code(errorCode);
+      reply(payload).code(errorCode);
     }
-
   }
 
-  // TODO: think of a way to delete replyCallbacks while iterating them
-  replyCallbacksQueue = [];
   task = false;
+}
+
+function fetchStoryContentAndPopulateCache(i, newlyFetchedTopStoriesIds) {
+  https.get({
+    host: 'hacker-news.firebaseio.com',
+    path: '/v0/item/' + newlyFetchedTopStoriesIds[i] + '.json?print=pretty',
+    method: 'GET'
+  }, function fetchAndPopulateTopStories(contentResponse) {
+    var storyContentResponseData = '';
+    contentResponse.setEncoding('utf8');
+    contentResponse.on('data', function(data) {
+      storyContentResponseData += data;
+    });
+    contentResponse.on('end', function(data) {
+      if (!errorInStoryContentPopulation) {
+        topStoriesContents.push(JSON.parse(storyContentResponseData));
+        if (i == newlyFetchedTopStoriesIds.length - 1) {
+          topStoriesIds = newlyFetchedTopStoriesIds;
+          console.log('here');
+          runReplyCallbacksQueue(isPopulatingTopStories, topStoriesContents);
+          errorInStoryContentPopulation = false;
+        }
+      }
+    });
+  }).on('error', (e) => {
+    // Reset cache, has it can be corrupted with half the entries filled
+    topStoriesIds = [];
+    topStoriesContents = [];
+    errorInStoryContentPopulation = true;
+    runReplyCallbacksQueue(isPopulatingTopStories, 'Error', 500);
+  }).end();
 }

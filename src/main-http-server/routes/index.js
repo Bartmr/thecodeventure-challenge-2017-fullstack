@@ -1,5 +1,3 @@
-const https = require('https');
-
 const topStoriesCache = require('../top-stories-cache.js');
 
 module.exports = [
