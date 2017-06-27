@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "proxy": "https://localhost",
-  "homepage" : "/reactjs-client-side",
   "dependencies": {
     "react": "^15.6.1",
-    "react-dom": "^15.6.1"
+    "react-dom": "^15.6.1",
+    "superagent": "^3.5.2"
   },
   "devDependencies": {
     "react-scripts": "1.0.7"

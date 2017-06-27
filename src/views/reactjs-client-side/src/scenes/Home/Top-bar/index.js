@@ -9,7 +9,7 @@ class TopBar extends Component {
         <a className="btn right">
           <i className="material-icons">cached</i>
         </a>
-        <span className="title">Home</span>
+        <span className="title">Top Stories</span>
       </div>
     );
   }

@@ -31,7 +31,7 @@ module.exports = [
         request.cookieAuth.set(request.auth.credentials.profile);
 
         // User is now logged in, redirect them to their account area
-        return reply('Logged in')
+        reply.redirect('/');
 
       }
     }
