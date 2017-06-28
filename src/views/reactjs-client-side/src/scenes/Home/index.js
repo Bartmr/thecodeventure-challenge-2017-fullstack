@@ -6,7 +6,7 @@ class Home extends Component {
   render() {
     return (
       <div>
-        <TopBar></TopBar>
+        <TopBar title="Top Stories"></TopBar>
         <Feed></Feed>
       </div>
     );

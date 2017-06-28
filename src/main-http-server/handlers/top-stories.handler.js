@@ -45,7 +45,7 @@ module.exports = {
             // Top stories are not refreshed, is time to pause the requests
             stopSignals.isPopulatingTopStories = true;
             stopSignals.isFetchingTopStoryIds = false;
-
+            topStoriesContents = [];
             for (var i = 0; i < newlyFetchedTopStoriesIds.length; i++) {
               fetchStoryContentAndPopulateCache(i, newlyFetchedTopStoriesIds);
             }
@@ -91,6 +91,9 @@ function fetchStoryContentAndPopulateCache(i, newlyFetchedTopStoriesIds) {
         topStoriesContents.push(JSON.parse(storyContentResponseData));
         if (i == newlyFetchedTopStoriesIds.length - 1) {
           topStoriesIds = newlyFetchedTopStoriesIds;
+          topStoriesContents.sort(function(a, b) {
+            return b.score - a.score;
+          })
           runReplyCallbacksQueue('isPopulatingTopStories', topStoriesContents);
           errorInStoryContentPopulation = false;
         }

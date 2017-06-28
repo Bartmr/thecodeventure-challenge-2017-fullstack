@@ -6,7 +6,9 @@ const TopStoriesInterface = {
   get: function(callback) {
     if (!stories) {
       this.refresh(callback);
-    } else {}
+    } else {
+      callback(stories);
+    }
   },
   refresh: function(callback) {
     request.get('/top-stories').end(function(err, res) {
@@ -15,7 +17,8 @@ const TopStoriesInterface = {
       } else if (err) {
         alert(err);
       } else {
-        callback(res.body);
+        stories = res.body
+        callback(stories);
       }
     })
   }

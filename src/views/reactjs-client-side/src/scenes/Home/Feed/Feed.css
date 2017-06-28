@@ -1,0 +1,20 @@
+.loading-message{
+  text-align: center;
+}
+
+ul.story-cards-container{
+  list-style: none;
+}
+
+.story-card{
+  margin: 10px auto;
+  max-width: 800px;
+  border: 1px solid LightGrey;
+  border-radius: 5px;
+  padding: 3px;
+}
+
+.story-card h3{
+  margin: 0;
+
+}

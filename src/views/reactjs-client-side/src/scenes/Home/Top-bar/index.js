@@ -6,10 +6,8 @@ class TopBar extends Component {
     return (
       <div className="app-bar">
         <a className="btn left"></a>
-        <a className="btn right">
-          <i className="material-icons">cached</i>
-        </a>
-        <span className="title">Top Stories</span>
+        <a className="btn right"></a>
+        <span className="title">{this.props.title}</span>
       </div>
     );
   }
