@@ -35,7 +35,7 @@ class Feed extends Component {
             <a href="">
               <h3>{story.title}</h3>
             </a>
-            <label className="bottom-label">{story.score + ' points | ' + (story.ammountOfComments || 0) + ' comments | ' + 'date' + ' by ' + story.by}</label>
+            <label className="bottom-label">{story.score + ' points | ' + (story.ammountOfComments || 0) + ' comments | ' + TimeAgo().ago(story.time * 1000) + ' by ' + story.by}</label>
           </li>
         })
       });
