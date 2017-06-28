@@ -1,8 +1,7 @@
 import React, {Component} from 'react';
 import './Feed.css';
 import TopStoriesService from '../../../services/Top-Stories.service.js'
-
-var me;
+import TimeAgo from 'time-ago'
 
 class Feed extends Component {
   constructor(props) {
@@ -11,7 +10,6 @@ class Feed extends Component {
       loading: true,
       storyCards: null
     }
-    me = this;
   }
   render() {
     if (this.state.loading) {
@@ -26,13 +24,20 @@ class Feed extends Component {
   }
 
   componentDidMount() {
-    TopStoriesService.get(function(stories) {
-      console.log(stories)
-      me.setState({
+    TopStoriesService.get(this, function(stories) {
+      this.setState({
         loading: false,
-        storyCards: stories.map((story, index) => <li key={index} className='story-card'>
-          <h3>{story.title}</h3>
-        </li>)
+        storyCards: stories.map(function(story, index) {
+          if (story.kids) {
+            story.ammountOfComments = story.kids.length;
+          }
+          return <li key={index} className='story-card'>
+            <a href="">
+              <h3>{story.title}</h3>
+            </a>
+            <label className="bottom-label">{story.score + ' points | ' + (story.ammountOfComments || 0) + ' comments | ' + 'date' + ' by ' + story.by}</label>
+          </li>
+        })
       });
     });
 

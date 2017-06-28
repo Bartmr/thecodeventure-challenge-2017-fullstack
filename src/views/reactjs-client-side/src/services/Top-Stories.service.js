@@ -3,14 +3,14 @@ import request from 'superagent';
 var stories;
 
 const TopStoriesInterface = {
-  get: function(callback) {
+  get: function(component, callback) {
     if (!stories) {
-      this.refresh(callback);
+      this.refresh(component, callback);
     } else {
-      callback(stories);
+      callback.call(component, stories);
     }
   },
-  refresh: function(callback) {
+  refresh: function(component, callback) {
     request.get('/top-stories').end(function(err, res) {
       if (err && err.status === 401) {
         window.location.href = window.location.protocol + '//' + window.location.hostname + "/login";
@@ -18,7 +18,7 @@ const TopStoriesInterface = {
         alert(err);
       } else {
         stories = res.body
-        callback(stories);
+        callback.call(component, stories);
       }
     })
   }
