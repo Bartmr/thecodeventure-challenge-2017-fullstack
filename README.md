@@ -1,4 +1,4 @@
-#### Fullstack challenge from The Code Venture. It's a Hacker News Client made with ReactJS, HappiJS and a internal cache system with reply queues.
+#### Fullstack challenge from The Code Venture. It's a Hacker News Client made with ReactJS, HapiJS, Github Authentication and an internal cache system with reply queues.
 
 ## Setup:
 * Set environment variables if you just want to run the server without starting any client-side views build or dev systems:
